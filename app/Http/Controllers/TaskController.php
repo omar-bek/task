@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
@@ -19,10 +20,15 @@ class TaskController extends Controller
 
     public function store(request $request)
     {
+        $request->validate([
+            "title" => "string|required",
+            "description" => "string|required",
+        ]);
 
-        $task = Task::create([
+             $task = Task::create([
             'title' => $request->title,
             'description' => $request->description,
+            'user_id'=> Auth::id(),
 
         ]);
         return response()->json([
@@ -40,7 +46,12 @@ class TaskController extends Controller
     {
         //  Task::findOrFail($task);
 
-            $task->update($request->all());
+                $fields=$request->validate([
+                    "title" => "string|required",
+                    "description" => "string|required",
+                    "status" => "string|in:pending,in_progress,completed",
+                ]);
+            $task->update($fields);
             return response()->json([
                 "status" => "success",
                 "message" => "Task updated successfully.",
