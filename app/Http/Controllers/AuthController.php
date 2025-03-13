@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -23,6 +24,7 @@ class AuthController extends Controller
             "email"=> $request->email,
             "password"=> bcrypt($request->password),
             ]);
+            Auth::login($user);
             $token = $user->createToken('auth_token')->plainTextToken;
             return response()->json([$user,$token], 201);
 
@@ -45,11 +47,11 @@ class AuthController extends Controller
         $request->user()->token()->revoke();
         return response()->json(["message" => "Logged out successfully"]);
     }
-    public function user(Request $request)
+    public function index()
 
     {
-        User::all();
-        return response()->json($request->user());
+       $user= User::all();
+        return response()->json($user);
     }
     // End of auth apii
 
